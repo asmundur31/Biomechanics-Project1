@@ -121,7 +121,7 @@ legend('Right gait', 'Left gait')
 xlabel('Gait cycle [%]')
 ylabel('Posterior tilt - / Anterior tilt + [deg]')
 
-% Pelvis Angle Plot
+% Pelvis Angle Plot here
 nexttile
 plot(timeR, pelvisAngleR, 'green');
 hold on
