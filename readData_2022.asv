@@ -54,9 +54,13 @@ leftTimeRange = (288:386);
 trunkAngleR = getSegmentAngle(TRXO_x, TRXO_y, TRXP_x, TRXP_y, rightTimeRange);
 trunkAngleL = getSegmentAngle(TRXO_x, TRXO_y, TRXP_x, TRXP_y, leftTimeRange);
 
+trunkAngle = table(trunkAngleR, trunkAngleL);
+
 % Calculate the Pelvis Angle
 pelvisAngleR = getSegmentAngle(PELP_x, PELP_y, PELO_x, PELO_y, rightTimeRange);
 pelvisAngleL = getSegmentAngle(PELP_x, PELP_y, PELO_x, PELO_y, leftTimeRange);
+
+pelvisAngle = table(pelvisAngleR, pelvisAngleL);
 
 % Calculate the left Hip Angle
 leftThighAngleR = getSegmentAngle(LHIP_x, LHIP_y, LKNEE_x, LKNEE_y, rightTimeRange);
@@ -65,12 +69,16 @@ leftHipAngleR = getJointAngle(pelvisAngleR, leftThighAngleR);
 leftThighAngleL = getSegmentAngle(LHIP_x, LHIP_y, LKNEE_x, LKNEE_y, leftTimeRange);
 leftHipAngleL = getJointAngle(pelvisAngleL, leftThighAngleL);
 
+leftHipAngle = table(leftHipAngleR, leftHipAngleL);
+
 % Calculate the right Hip Angle
 rightThighAngleR = getSegmentAngle(RHIP_x, RHIP_y, RKNEE_x, RKNEE_y, rightTimeRange);
 rightHipAngleR = getJointAngle(pelvisAngleR, rightThighAngleR);
 
 rightThighAngleL = getSegmentAngle(RHIP_x, RHIP_y, RKNEE_x, RKNEE_y, leftTimeRange);
 rightHipAngleL = getJointAngle(pelvisAngleL, rightThighAngleL);
+
+rightHipAngle = table(rightHipAngleR, rightHipAngleL);
 
 % Calculate the left Knee Angle
 leftShankAngleR = getSegmentAngle(LKNEE_x, LKNEE_y, LANKLE_x, LANKLE_y, rightTimeRange);
@@ -79,12 +87,16 @@ leftKneeAngleR = getJointAngle(leftShankAngleR, leftThighAngleR);
 leftShankAngleL = getSegmentAngle(LKNEE_x, LKNEE_y, LANKLE_x, LANKLE_y, leftTimeRange);
 leftKneeAngleL = getJointAngle(leftShankAngleL, leftThighAngleL);
 
+leftKneeAngle = table(leftKneeAngleR, leftKneeAngleL);
+
 % Calculate the right Knee Angle
 rightShankAngleR = getSegmentAngle(RKNEE_x, RKNEE_y, RANKLE_x, RANKLE_y, rightTimeRange);
 rightKneeAngleR = getJointAngle(rightShankAngleR, rightThighAngleR);
 
 rightShankAngleL = getSegmentAngle(RKNEE_x, RKNEE_y, RANKLE_x, RANKLE_y, leftTimeRange);
 rightKneeAngleL = getJointAngle(rightShankAngleL, rightThighAngleL);
+
+rightKneeAngle = table(rightKneeAngleR, rightKneeAngleL);
 
 % Calculate the right Ankle Angle
 rightFootAngleR = getFootAngle(RANKLE_x, RANKLE_y, RTOE_x, RTOE_y, rightTimeRange);
@@ -93,6 +105,7 @@ rightAnkleAngleR = getAnkleAngle(rightShankAngleR, rightFootAngleR);
 rightFootAngleL = getFootAngle(RANKLE_x, RANKLE_y, RTOE_x, RTOE_y, leftTimeRange);
 rightAnkleAngleL = getAnkleAngle(rightShankAngleL, rightFootAngleL);
 
+rightAnkleAngle = table(rightAnkleAngle)
 
 % Calculate the left Ankle Angle
 leftFootAngleR = getFootAngle(LANKLE_x, LANKLE_y, LTOE_x, LTOE_y, rightTimeRange);
@@ -100,6 +113,8 @@ leftAnkleAngleR = getAnkleAngle(leftShankAngleR, leftFootAngleR);
 
 leftFootAngleL = getFootAngle(LANKLE_x, LANKLE_y, LTOE_x, LTOE_y, leftTimeRange);
 leftAnkleAngleL = getAnkleAngle(leftShankAngleL, leftFootAngleL);
+
+T = table(trunkAngleL, trunkAngleR, pelvisAngleL, pelvisAngleR, leftThighAngleR, leftThighAngleR)
 
 
 %% Here begins the plots - Top->Down 
@@ -136,9 +151,8 @@ nexttile
 plot(timeR, leftHipAngleR, 'green');
 hold on
 plot(timeL, rightHipAngleL, 'red');
-title('Left hip in right gait cycle (green) and right hip in left gait cycle (red)')
+title('Left hip (green) and right hip (red)')
 legend('Right gait', 'Left gait')
-
 xlabel('Gait cycle [%]')
 ylabel('Extension - / Flexion + [deg]')
 
@@ -146,7 +160,8 @@ nexttile
 plot(timeL, leftHipAngleL, 'red');
 hold on
 plot(timeR, rightHipAngleR, 'green');
-title('Right hip in right gait cycle (green) and left hip in left gait cycle (red)')
+title('Right hip (green) and left hip (red)')
+legend('Left gait', 'Right gait')
 xlabel('Gait cycle [%]')
 ylabel('Extension - / Flexion + [deg]')
 
@@ -155,7 +170,8 @@ nexttile
 plot(timeR, leftKneeAngleR, 'green');
 hold on
 plot(timeL, rightKneeAngleL, 'red');
-title('Left knee in right gait cycle (green) and right knee in left gait cycle (red)')
+title('Left knee (green) and right knee (red)')
+legend('Right gait', 'Left gait')
 xlabel('Gait cycle [%]')
 ylabel('Hyperextension - / Flexion + [deg]')
 
@@ -163,7 +179,8 @@ nexttile
 plot(timeL, leftKneeAngleL, 'red');
 hold on
 plot(timeR, rightKneeAngleR, 'green');
-title('Right knee in right gait cycle (green) and left knee in left gait cycle (red)')
+title('Right knee (green) and left knee (red)')
+legend('Left gait', 'Right gait')
 xlabel('Gait cycle [%]')
 ylabel('Hyperextension - / Flexion + [deg]')
 
@@ -172,7 +189,8 @@ nexttile
 plot(timeR, leftAnkleAngleR, 'green');
 hold on
 plot(timeL, rightAnkleAngleL, 'red');
-title('Left ankle in right gait cycle (green) and right ankle in left gait cycle (red)')
+title('Left ankle (green) and right ankle (red)')
+legend('Right gait', 'Left gait')
 xlabel('Gait cycle [%]')
 ylabel('Plantarflexor - / Dorsiflexor + [deg]')
 
@@ -180,7 +198,8 @@ nexttile
 plot(timeL, leftAnkleAngleL, 'red');
 hold on
 plot(timeR, rightAnkleAngleR, 'green');
-title('Right ankle in right gait cycle (green) and left ankle in left gair cycle (red)')
+title('Right ankle (green) and left ankle (red)')
+legend('Left gait', 'Right gait')
 xlabel('Gait cycle [%]')
 ylabel('Plantarflexor - / Dorsiflexor + [deg]')
 
