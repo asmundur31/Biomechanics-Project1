@@ -116,7 +116,8 @@ nexttile
 plot(timeR, trunkAngleR, 'green');
 hold on
 plot(timeL, trunkAngleL, 'red');
-title('Trunk, right gait cycle (green) and left gait cycle (red)')
+title('Trunk')
+legend('Right gait', 'Left gait')
 xlabel('Gait cycle [%]')
 ylabel('Posterior tilt - / Anterior tilt + [deg]')
 
@@ -125,7 +126,8 @@ nexttile
 plot(timeR, pelvisAngleR, 'green');
 hold on
 plot(timeL, pelvisAngleL, 'red');
-title('Pelvis, right gait cycle (green) and left gait cycle (red)')
+title('Pelvis')
+legend('Right gait', 'Left gait')
 xlabel('Gait cycle [%]')
 ylabel('Posterior tilt - / Anterior tilt + [deg]')
 
@@ -134,7 +136,8 @@ nexttile
 plot(timeR, leftHipAngleR, 'green');
 hold on
 plot(timeL, rightHipAngleL, 'red');
-title('Left hip in right gait cycle (green) and right hip in left gait cycle (red)')
+title('Left hip (green) and right hip (red)')
+legend('Right gait', 'Left gait')
 xlabel('Gait cycle [%]')
 ylabel('Extension - / Flexion + [deg]')
 
@@ -142,7 +145,8 @@ nexttile
 plot(timeL, leftHipAngleL, 'red');
 hold on
 plot(timeR, rightHipAngleR, 'green');
-title('Right hip in right gait cycle (green) and left hip in left gait cycle (red)')
+title('Right hip (green) and left hip (red)')
+legend('Left gait', 'Right gait')
 xlabel('Gait cycle [%]')
 ylabel('Extension - / Flexion + [deg]')
 
@@ -151,7 +155,8 @@ nexttile
 plot(timeR, leftKneeAngleR, 'green');
 hold on
 plot(timeL, rightKneeAngleL, 'red');
-title('Left knee in right gait cycle (green) and right knee in left gait cycle (red)')
+title('Left knee (green) and right knee (red)')
+legend('Right gait', 'Left gait')
 xlabel('Gait cycle [%]')
 ylabel('Hyperextension - / Flexion + [deg]')
 
@@ -159,7 +164,8 @@ nexttile
 plot(timeL, leftKneeAngleL, 'red');
 hold on
 plot(timeR, rightKneeAngleR, 'green');
-title('Right knee in right gait cycle (green) and left knee in left gait cycle (red)')
+title('Right knee (green) and left knee (red)')
+legend('Left gait', 'Right gait')
 xlabel('Gait cycle [%]')
 ylabel('Hyperextension - / Flexion + [deg]')
 
@@ -168,7 +174,8 @@ nexttile
 plot(timeR, leftAnkleAngleR, 'green');
 hold on
 plot(timeL, rightAnkleAngleL, 'red');
-title('Left ankle in right gait cycle (green) and right ankle in left gait cycle (red)')
+title('Left ankle (green) and right ankle (red)')
+legend('Right gait', 'Left gait')
 xlabel('Gait cycle [%]')
 ylabel('Plantarflexor - / Dorsiflexor + [deg]')
 
@@ -176,7 +183,8 @@ nexttile
 plot(timeL, leftAnkleAngleL, 'red');
 hold on
 plot(timeR, rightAnkleAngleR, 'green');
-title('Right ankle in right gait cycle (green) and left ankle in left gair cycle (red)')
+title('Right ankle (green) and left ankle (red)')
+legend('Left gait', 'Right gait')
 xlabel('Gait cycle [%]')
 ylabel('Plantarflexor - / Dorsiflexor + [deg]')
 
