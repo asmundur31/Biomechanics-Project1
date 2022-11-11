@@ -102,7 +102,7 @@ leftFootAngleL = getFootAngle(LANKLE_x, LANKLE_y, LTOE_x, LTOE_y, leftTimeRange)
 leftAnkleAngleL = getAnkleAngle(leftShankAngleL, leftFootAngleL);
 
 
-%% Here begins the plots - Top->Down
+%% Here begins the plots - Top->Down 
 
 % Set the time to one gait cycle
 timeR = linspace(0, 100, length(rightTimeRange));
