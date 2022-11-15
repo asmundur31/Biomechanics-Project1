@@ -17,29 +17,31 @@ data_grf_s = downsample(data_grf,10);
 
 %% Read angle data
 % Load the calculated angles
-angles_left = readtable(fullfile(file_dir, 'angles_left.txt'));
-angles_right = readtable(fullfile(file_dir, 'angles_right.txt'));
+angles_left = readtable(fullfile(file_dir, 'walking_angles_left.txt'));
+angles_right = readtable(fullfile(file_dir, 'walking_angles_right.txt'));
 
 %% Constants
 height = 1705; % mm
 weight = 65.3; % kg
 g = 9.818; % m/s^2 
-
-%% ANKLES
-% Constant for both left and right
 n = 2; % We add two extra frames to the gait cycle for derivations 
 toMeters = 1/1000;
 timeStep = 1/100;
 
+%% ANKLES
+% Constant for both left and right
 m_F = 0.0145 * weight; % Mass of the foot
 foot_gravity_force = m_F * g;
 inertia_F = m_F * (0.69-0.5)^2;
 
-%% Left ankle
 % Time range
 leftTimeRange_der = (288:386+n);
 leftTimeRange = (288:386);
 
+rightTimeRange_der = (237-n:336);
+rightTimeRange = (237:336);
+
+%% Left ankle
 % Data from force plate 1 
 FP1_force_x = data_grf_s.FP1_Force_Y;            
 FP1_force_y = data_grf_s.FP1_Force_Z;
@@ -106,11 +108,9 @@ l_force_A_y = m_F * l_a_F_y - l_force_GR_y + foot_gravity_force;
 
 l_moment_A = inertia_F .* l_alfa_f - l_force_GR_x .* l_dist_GR_y(n+1:end) - l_force_GR_y .* l_dist_GR_x(n+1:end) + l_force_A_x .* l_dist_AF_y(n+1:end) + l_force_A_y .* l_dist_AF_x(n+1:end);
 
-%% Right ankle
-% Time range 
-rightTimeRange_der = (237-n:336);
-rightTimeRange = (237:336);
+l_power_A = l_moment_A .* l_alfa_f;
 
+%% Right ankle
 % Data from force plate 2
 FP2_force_x = data_grf_s.FP2_Force_Y;            
 FP2_force_y = data_grf_s.FP2_Force_Z;
@@ -173,13 +173,14 @@ r_force_A_y = m_F * r_a_F_y - r_force_GR_y + foot_gravity_force;
 
 r_moment_A = inertia_F .* r_alfa_f - r_force_GR_x .* r_dist_GR_y(n+1:end) - r_force_GR_y .* r_dist_GR_x(n+1:end)  + r_force_A_x .* r_dist_AF_y(n+1:end)  + r_force_A_y .* r_dist_AF_x(n+1:end) ;
 
+r_power_A = r_moment_A .* r_alfa_f;
+
 %% Plot ankle results
 timeL = linspace(0, 100, length(leftTimeRange));
 timeR = linspace(0, 100, length(rightTimeRange));
 
-
 figure(1)
-subplot(2, 1, 1); % Foot segment angular acceleration
+subplot(3, 1, 1); % Foot segment angular acceleration
 plot(timeR, r_alfa_f, 'green', 'LineWidth', 1.5);
 hold on
 plot(timeL, l_alfa_f, 'red', 'LineWidth', 1.5);
@@ -190,7 +191,7 @@ ylabel('Angular acceleration [rad/s^2]', 'FontSize', 9)
 axis([0 100 -200 200])
 grid on
 
-subplot(2, 1, 2); % Ankle moment
+subplot(3, 1, 2); % Ankle moment
 plot(timeR, -r_moment_A, 'green', 'LineWidth', 1.5);
 hold on
 plot(timeL, -l_moment_A, 'red', 'LineWidth', 1.5);
@@ -201,11 +202,22 @@ ylabel('Dorsiflexor - / Plantarflexor + [N*m]', 'FontSize', 9)
 axis([0 100 -25 110])
 grid on
 
+subplot(3, 1, 3); % Ankle power
+plot(timeR, r_power_A, 'green', 'LineWidth', 1.5);
+hold on
+plot(timeL, l_power_A, 'red', 'LineWidth', 1.5);
+title('Ankle power')
+legend('Right gait', 'Left gait')
+xlabel('Gait cycle [%]')
+ylabel('Power absorption - / Power generation + [W]', 'FontSize', 9)
+grid on
+
 %% KNEES
 % Constant for both left and right
 m_S = 0.0465 * weight; % Mass of the shank
 inertia_S = m_S * (0.528 - 0.302)^2;
 shank_gravity_force = m_S * g;
+
 %% Left knee
 % Read coordinates for left knee
 LKNEE_x = data_trc.LKJC_Y(leftTimeRange_der) * toMeters;
@@ -250,6 +262,9 @@ l_force_K_x = m_S * l_a_K_x + l_force_A_x;
 l_force_K_y = m_S * l_a_K_y + l_force_A_y + shank_gravity_force;
 
 l_moment_K = inertia_S .* l_alfa_S + l_moment_A + l_force_A_x .* l_dist_AS_y(n+1:end) - l_force_A_y .* l_dist_AS_x(n+1:end) - l_force_K_y .* l_dist_KS_x(n+1:end) + l_force_K_x .* l_dist_KS_y(n+1:end);
+
+l_power_K = l_moment_K .* l_alfa_S;
+
 %% Right knee
 % Read coordinates for right knee
 RKNEE_x = data_trc.RKJC_Y(rightTimeRange_der) * toMeters;
@@ -293,12 +308,12 @@ r_force_K_x = m_S * r_a_S_x + r_force_A_x;
 r_force_K_y = m_S * r_a_S_y + r_force_A_y + shank_gravity_force;
 
 r_moment_K = inertia_S .* r_alfa_S + r_moment_A + r_force_A_x .* r_dist_AS_y(n+1:end) - r_force_A_y .* r_dist_AS_x(n+1:end) - r_force_K_y .* r_dist_KS_x(n+1:end) + r_force_K_x .* r_dist_KS_y(n+1:end);
-%% Plot knee results
-timeL = linspace(0, 100, length(leftTimeRange));
-timeR = linspace(0, 100, length(rightTimeRange));
 
+r_power_K = r_moment_K .* r_alfa_S;
+
+%% Plot knee results
 figure(2)
-subplot(2, 1, 1); % Foot segment angular acceleration
+subplot(3, 1, 1); % Shank segment angular acceleration
 plot(timeR, r_alfa_S, 'green', 'LineWidth', 1.5);
 hold on
 plot(timeL, l_alfa_S, 'red', 'LineWidth', 1.5);
@@ -306,18 +321,26 @@ title('Shank segment angular acceleration')
 legend('Right gait', 'Left gait')
 xlabel('Gait cycle [%]')
 ylabel('Angular acceleration [rad/s^2]', 'FontSize', 9)
-%axis([0 100 -200 200])
 grid on
 
-subplot(2, 1, 2); % Ankle moment
+subplot(3, 1, 2); % Knee moment
 plot(timeR, r_moment_K, 'green', 'LineWidth', 1.5);
 hold on
 plot(timeL, l_moment_K, 'red', 'LineWidth', 1.5);
 title('Knee moment')
 legend('Right gait', 'Left gait')
 xlabel('Gait cycle [%]')
-ylabel('Dorsiflexor - / Plantarflexor + [N*m]', 'FontSize', 9)
-%axis([0 100 -25 110])
+ylabel('Hip flexor - / Hip extensor + [N*m]', 'FontSize', 9)
+grid on
+
+subplot(3, 1, 3); % Knee power
+plot(timeR, r_power_K, 'green', 'LineWidth', 1.5);
+hold on
+plot(timeL, l_power_K, 'red', 'LineWidth', 1.5);
+title('Knee power')
+legend('Right gait', 'Left gait')
+xlabel('Gait cycle [%]')
+ylabel('Power absorption - / Power generation + [W]', 'FontSize', 9)
 grid on
 
 %% HIPS
@@ -325,21 +348,31 @@ grid on
 m_T = 0.1 * weight;
 hip_gravity_force = m_T * g;
 inertia_T = m_T * (0.567-0.54)^2;
+
 %% Left hip
-% Center of mass coordinates
+% Read coordinates for left hip
 LHIP_x=data_trc.LHJC_Y(leftTimeRange_der)*toMeters;   
 LHIP_y=data_trc.LHJC_Z(leftTimeRange_der)*toMeters; 
 
+% Calculate distances
 l_thighCOM_x = (LHIP_x - LKNEE_x) * 0.567 + LKNEE_x;
 l_thighCOM_y = (LHIP_y - LKNEE_y) * 0.567 + LKNEE_y;
 
-l_a_T_x = []; % Acceleration of the right shank in x-direction
+% Distance center of mass - knee
+l_dist_kt_x = l_thighCOM_x - LKNEE_x;
+l_dist_kt_y = l_thighCOM_y - LKNEE_y;
+
+% Distance center of mass - hip
+l_dist_ht_x = LHIP_x - l_thighCOM_x;
+l_dist_ht_y = LHIP_y - l_thighCOM_y; 
+
+l_a_T_x = []; % Acceleration of the left thigh in x-direction
 for i=3:size(leftTimeRange_der, 2)
     a = (l_thighCOM_x(i-2) - 2*l_thighCOM_x(i-1) + l_thighCOM_x(i)) / timeStep^2;
     l_a_T_x(i-2, 1) = a;
 end
 
-l_a_T_y = []; % Acceleration of the right shank in y-direction
+l_a_T_y = []; % Acceleration of the left thigh in y-direction
 for i=3:size(leftTimeRange_der, 2)
     a = (l_thighCOM_y(i-2) - 2*l_thighCOM_y(i-1) + l_thighCOM_y(i)) / timeStep^2;
     l_a_T_y(i-2, 1) = a;
@@ -354,47 +387,90 @@ for i=3:size(leftTimeRange_der, 2)
     l_alfa_T(i-2, 1) = a;
 end
 
-% Distance center of mass - knee
-l_dist_kt_x = l_thighCOM_x - LKNEE_x;
-l_dist_kt_y = l_thighCOM_y - LKNEE_y;
-
-% Distance center of mass - hip
-l_dist_ht_x = LHIP_x - l_thighCOM_x;
-l_dist_ht_y = LHIP_y - l_thighCOM_y; 
-
 % Calculations
 l_force_H_x = m_T * l_a_T_x + l_force_K_x;
 l_force_H_y = m_T * l_a_T_y + l_force_K_y + hip_gravity_force;
 
 l_moment_H = inertia_T .* l_alfa_T + l_moment_K + l_force_K_x .* l_dist_kt_y(n+1:end) + l_force_K_y .* l_dist_kt_x(n+1:end) + l_force_H_y .* l_dist_ht_x(n+1:end) + l_force_H_x .* l_dist_ht_y(n+1:end);
 
+l_power_H = l_moment_H .* l_alfa_T;
+
 %% Right hip
+% Read coordinates for right hip
+RHIP_x = data_trc.RHJC_Y(rightTimeRange_der)*toMeters;   
+RHIP_y = data_trc.RHJC_Z(rightTimeRange_der)*toMeters; 
+
+% Calculate distances
+r_thighCOM_x = (RHIP_x - RKNEE_x) * 0.567 + RKNEE_x;
+r_thighCOM_y = (RHIP_y - RKNEE_y) * 0.567 + RKNEE_y;
+
+% Distance center of mass - knee
+r_dist_kt_x = r_thighCOM_x - RKNEE_x;
+r_dist_kt_y = r_thighCOM_y - RKNEE_y;
+
+% Distance center of mass - hip
+r_dist_ht_x = RHIP_x - r_thighCOM_x;
+r_dist_ht_y = RHIP_y - r_thighCOM_y; 
+
+r_a_T_x = []; % Acceleration of the right thigh in x-direction
+for i=3:size(rightTimeRange_der, 2)
+    a = (r_thighCOM_x(i-2) - 2*r_thighCOM_x(i-1) + r_thighCOM_x(i)) / timeStep^2;
+    r_a_T_x(i-2, 1) = a;
+end
+
+r_a_T_y = []; % Acceleration of the right thigh in y-direction
+for i=3:size(rightTimeRange_der, 2)
+    a = (r_thighCOM_y(i-2) - 2*r_thighCOM_y(i-1) + r_thighCOM_y(i)) / timeStep^2;
+    r_a_T_y(i-2, 1) = a;
+end
+
+% Read right thigh angle data
+thighAngleR = angles_right.rightThighAngleR * pi/180; % angles in radians
+
+r_alfa_T = [];
+for i=3:size(rightTimeRange_der, 2)
+    a = (thighAngleR(i-2) - 2*thighAngleR(i-1) + thighAngleR(i)) / timeStep^2 ;
+    r_alfa_T(i-2, 1) = a;
+end
 
 % Calculations
+r_force_H_x = m_T * r_a_T_x + r_force_K_x;
+r_force_H_y = m_T * r_a_T_y + r_force_K_y + hip_gravity_force;
+
+r_moment_H = inertia_T .* r_alfa_T + r_moment_K + r_force_K_x .* r_dist_kt_y(n+1:end) + r_force_K_y .* r_dist_kt_x(n+1:end) + r_force_H_y .* r_dist_ht_x(n+1:end) + r_force_H_x .* r_dist_ht_y(n+1:end);
+
+r_power_H = r_moment_H .* r_alfa_T;
 
 %% Plot hip results
-timeL = linspace(0, 100, length(leftTimeRange));
-timeR = linspace(0, 100, length(rightTimeRange));
-
 figure(3)
-subplot(2, 1, 1); % Foot segment angular acceleration
-% plot(timeR, r_alfa_S, 'green', 'LineWidth', 1.5);
-% hold on
+subplot(3, 1, 1); % Thigh segment angular acceleration
+plot(timeR, r_alfa_T, 'green', 'LineWidth', 1.5);
+hold on
 plot(timeL, l_alfa_T, 'red', 'LineWidth', 1.5);
 title('Thigh segment angular acceleration')
-% legend('Right gait', 'Left gait')
+legend('Right gait', 'Left gait')
 xlabel('Gait cycle [%]')
 ylabel('Angular acceleration [rad/s^2]', 'FontSize', 9)
-%axis([0 100 -200 200])
+axis([0 100 -40 30])
 grid on
 
-subplot(2, 1, 2); % Hip moment
-%plot(timeR, r_moment_K, 'green', 'LineWidth', 1.5);
-%hold on
+subplot(3, 1, 2); % Hip moment
+plot(timeR, r_moment_H, 'green', 'LineWidth', 1.5);
+hold on
 plot(timeL, l_moment_H, 'red', 'LineWidth', 1.5);
 title('Hip moment')
-%legend('Right gait', 'Left gait')
+legend('Right gait', 'Left gait')
 xlabel('Gait cycle [%]')
-ylabel('Dorsiflexor - / Plantarflexor + [N*m]', 'FontSize', 9)
+ylabel('Knee flexor - / Knee extensor + [N*m]', 'FontSize', 9)
 %axis([0 100 -25 110])
+grid on
+
+subplot(3, 1, 3); % Hip power
+plot(timeR, r_power_H, 'green', 'LineWidth', 1.5);
+hold on
+plot(timeL, l_power_H, 'red', 'LineWidth', 1.5);
+title('Hip power')
+legend('Right gait', 'Left gait')
+xlabel('Gait cycle [%]')
+ylabel('Power absorption - / Power generation + [W]', 'FontSize', 9)
 grid on

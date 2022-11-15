@@ -48,8 +48,14 @@ FP2_COP_x=data_grf_s.FP2_COP_Y*toMeters;       FP2_COP_y=data_grf_s.FP2_COP_Z*to
 %% Here begins our code
 n = 2; % We add two extra frames to the gait cycle for derivations later
 
-rightTimeRange = (237-n:336);
-leftTimeRange = (288-n:386);
+if index == 1
+    rightTimeRange = (237-n:336);
+    leftTimeRange = (288-n:386);
+
+elseif index == 2
+    rightTimeRange = (163-n:229);
+    leftTimeRange = (163-n:229);
+end
 
 % Calculate the Trunk Angle
 trunkAngleR = getSegmentAngle(TRXO_x, TRXO_y, TRXP_x, TRXP_y, rightTimeRange);
@@ -89,7 +95,21 @@ writetable(left_table,'angles_left.txt', 'Delimiter',' ')
 right_table = table(trunkAngleR, pelvisAngleR, rightHipAngleR, rightThighAngleR, rightShankAngleR, rightKneeAngleR, rightFootAngleR, rightAnkleAngleR);
 writetable(right_table,'angles_right.txt', 'Delimiter',' ')
 
-%% Here begins the plots - Top->Down 
+if index == 1
+    left_table = table(trunkAngleL, pelvisAngleL, leftHipAngleL, leftThighAngleL, leftShankAngleL, leftKneeAngleL, leftFootAngleL, leftAnkleAngleL);
+    writetable(left_table,'walking_angles_left.txt', 'Delimiter',' ')
+
+    right_table = table(trunkAngleR, pelvisAngleR, rightHipAngleR, rightThighAngleR, rightShankAngleR, rightKneeAngleR, rightFootAngleR, rightAnkleAngleR);
+    writetable(right_table,'walking_angles_right.txt', 'Delimiter',' ')
+elseif index == 2
+    left_table = table(trunkAngleL, pelvisAngleL, leftHipAngleL, leftThighAngleL, leftShankAngleL, leftKneeAngleL, leftFootAngleL, leftAnkleAngleL);
+    writetable(left_table,'jogging_angles_left.txt', 'Delimiter',' ')
+
+    right_table = table(trunkAngleR, pelvisAngleR, rightHipAngleR, rightThighAngleR, rightShankAngleR, rightKneeAngleR, rightFootAngleR, rightAnkleAngleR);
+    writetable(right_table,'jogging_angles_right.txt', 'Delimiter',' ')
+end
+
+%% PLOTS --> works only for walking (index=1)
 % Get the frames for the gait cycle
 rightTimeRange_plot = (237:336);
 leftTimeRange_plot = (288:386);
