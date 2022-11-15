@@ -212,7 +212,7 @@ LKNEE_x = data_trc.LKJC_Y(leftTimeRange_der) * toMeters;
 LKNEE_y = data_trc.LKJC_Z(leftTimeRange_der) * toMeters;
 
 % Calculate distances
-l_shankCOM_x = (LKNEE_x - LANKLE_x) * 0.567 + LANKLE_x;
+l_shankCOM_x = (LANKLE_x - LKNEE_x) * 0.567 + LANKLE_x;
 l_shankCOM_y = (LKNEE_y - LANKLE_y) * 0.567 + LANKLE_y;
 
 % Distance center of mass - ankle
@@ -256,7 +256,7 @@ RKNEE_x = data_trc.RKJC_Y(rightTimeRange_der) * toMeters;
 RKNEE_y = data_trc.RKJC_Z(rightTimeRange_der) * toMeters;
 
 % Calculate distances
-r_shankCOM_x = (RKNEE_x - RANKLE_x) * 0.567 + RANKLE_x;
+r_shankCOM_x = (RANKLE_x - RKNEE_x) * 0.567 + RANKLE_x;
 r_shankCOM_y = (RKNEE_y - RANKLE_y) * 0.567 + RANKLE_y;
 
 % Distance center of mass - ankle

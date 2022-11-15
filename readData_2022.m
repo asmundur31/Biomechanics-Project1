@@ -48,8 +48,8 @@ FP2_COP_x=data_grf_s.FP2_COP_Y*toMeters;       FP2_COP_y=data_grf_s.FP2_COP_Z*to
 %% Here begins our code
 n = 2; % We add two extra frames to the gait cycle for derivations later
 
-rightTimeRange = (237:336+n);
-leftTimeRange = (288:386+n);
+rightTimeRange = (237-n:336);
+leftTimeRange = (288-n:386);
 
 % Calculate the Trunk Angle
 trunkAngleR = getSegmentAngle(TRXO_x, TRXO_y, TRXP_x, TRXP_y, rightTimeRange);
