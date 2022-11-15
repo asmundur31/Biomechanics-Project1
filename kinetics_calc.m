@@ -33,11 +33,11 @@ timeStep = 1/100;
 
 m_F = 0.0145 * weight; % Mass of the foot
 foot_gravity_force = m_F * g;
-inertia_F = m_F * (0.19^2);
+inertia_F = m_F * (0.69-0.5)^2;
 
 %% Left ankle
 % Time range
-leftTimeRange_der = (288-n:386);
+leftTimeRange_der = (288:386+n);
 leftTimeRange = (288:386);
 
 % Data from force plate 1 
@@ -51,47 +51,48 @@ FP1_COP_y  = data_grf_s.FP1_COP_Z*toMeters;
 LANKLE_x = data_trc.LAJC_Y(leftTimeRange_der) * toMeters;
 LANKLE_y = data_trc.LAJC_Z(leftTimeRange_der) * toMeters;
 
-l_a_F_x = []; % Acceleration of the left foot in x-direction
-for i=3:size(leftTimeRange_der, 2)
-    a = (LANKLE_x(i-2) - 2*LANKLE_x(i-1) + LANKLE_x(i)) / timeStep^2;
-    l_a_F_x(i-2, 1) = a;
-end
-
-l_a_F_y = []; % Acceleration of the left foot in y-direction
-for i=3:size(leftTimeRange_der, 2)
-    a = (LANKLE_y(i-2) - 2*LANKLE_y(i-1) + LANKLE_y(i)) / timeStep^2;
-    l_a_F_y(i-2, 1) = a;
-end
-
 % Ground reaction forces
 l_force_GR_x = FP1_force_x(leftTimeRange);
 l_force_GR_y = FP1_force_y(leftTimeRange);
 
 % Distance calculations
-LANKLE_x = data_trc.LAJC_Y(leftTimeRange) * toMeters;
-LANKLE_y = data_trc.LAJC_Z(leftTimeRange) * toMeters;
+LANKLE_x = data_trc.LAJC_Y(leftTimeRange_der) * toMeters;
+LANKLE_y = data_trc.LAJC_Z(leftTimeRange_der) * toMeters;
 
-LTOE_x = data_trc.LTOO_Y(leftTimeRange) * toMeters;   
-LTOE_y = data_trc.LTOO_Z(leftTimeRange) * toMeters;
+LTOE_x = data_trc.LTOO_Y(leftTimeRange_der) * toMeters;   
+LTOE_y = data_trc.LTOO_Z(leftTimeRange_der) * toMeters;
 
 % Left foot center of mass coordinates
-l_ankleCOM_x = (LTOE_x - LANKLE_x) * 0.5 + LANKLE_x;
-l_ankleCOM_y = (LANKLE_y - LTOE_y) * 0.5 + LTOE_y;
+l_footCOM_x = (LTOE_x - LANKLE_x) * 0.5 + LANKLE_x;
+l_footCOM_y = (LANKLE_y - LTOE_y) * 0.5 + LTOE_y;
+
+% Acceleration calculations
+l_a_F_x = []; % Acceleration of the left foot in x-direction
+for i=3:size(leftTimeRange_der, 2)
+    a = (l_footCOM_x(i-2) - 2*l_footCOM_x(i-1) + l_footCOM_x(i)) / timeStep^2;
+    l_a_F_x(i-2, 1) = a;
+end
+
+l_a_F_y = []; % Acceleration of the left foot in y-direction
+for i=3:size(leftTimeRange_der, 2)
+    a = (l_footCOM_y(i-2) - 2*l_footCOM_y(i-1) + l_footCOM_y(i)) / timeStep^2;
+    l_a_F_y(i-2, 1) = a;
+end
 
 % Left foot center of pressure coordinates
-l_ankleCOP_x = FP1_COP_x(leftTimeRange);
-l_ankleCOP_y = FP1_COP_y(leftTimeRange);
+l_footCOP_x = FP1_COP_x(leftTimeRange_der);
+l_footCOP_y = FP1_COP_y(leftTimeRange_der);
 
 % Distance center of pressure - center of mass
-l_dist_GR_x = l_ankleCOP_x - l_ankleCOM_x;
-l_dist_GR_y = l_ankleCOM_y - l_ankleCOP_y;
+l_dist_GR_x = l_footCOP_x - l_footCOM_x;
+l_dist_GR_y = l_footCOM_y - l_footCOP_y;
 
 l_dist_GR_x(59:end) = 0; % Write about in report
 l_dist_GR_y(59:end) = 0; 
 
 % Distance LANKLE - center of mass
-l_dist_A_x = l_ankleCOM_x - LANKLE_x;
-l_dist_A_y = LANKLE_y - l_ankleCOM_y;
+l_dist_A_x = l_footCOM_x - LANKLE_x;
+l_dist_A_y = LANKLE_y - l_footCOM_y;
 
 % Read left foot angle data
 footAngleL = angles_left.leftFootAngleL * pi/180; % angles in radians
@@ -106,11 +107,11 @@ end
 l_force_A_x = m_F * l_a_F_x - l_force_GR_x;
 l_force_A_y = m_F * l_a_F_y - l_force_GR_y + foot_gravity_force;
 
-l_moment_A = inertia_F .* l_alfa - l_force_GR_x .* l_dist_GR_y - l_force_GR_y .* l_dist_GR_x + l_force_A_x .* l_dist_A_y + l_force_A_y .* l_dist_A_x;
+l_moment_A = inertia_F .* l_alfa - l_force_GR_x .* l_dist_GR_y(1:end-n) - l_force_GR_y .* l_dist_GR_x(1:end-n) + l_force_A_x .* l_dist_A_y(1:end-n) + l_force_A_y .* l_dist_A_x(1:end-n);
 
 %% Right ankle
 % Time range 
-rightTimeRange_der = (237-n:336);
+rightTimeRange_der = (237:336+n);
 rightTimeRange = (237:336);
 
 % Data from force plate 2
@@ -124,43 +125,41 @@ FP2_COP_y  = data_grf_s.FP2_COP_Z * toMeters;
 RANKLE_x = data_trc.RAJC_Y(rightTimeRange_der) * toMeters;
 RANKLE_y = data_trc.RAJC_Z(rightTimeRange_der) * toMeters;
 
-r_a_F_x = []; % Acceleration of the right foot in x-direction
-for i=3:size(rightTimeRange_der, 2)
-    a = (RANKLE_x(i-2) - 2*RANKLE_x(i-1) + RANKLE_x(i)) / timeStep^2;
-    r_a_F_x(i-2, 1) = a;
-end
-
-r_a_F_y = []; % Acceleration of the right foot in y-direction
-for i=3:size(rightTimeRange_der, 2)
-    a = (RANKLE_y(i-2) - 2*RANKLE_y(i-1) + RANKLE_y(i)) / timeStep^2;
-    r_a_F_y(i-2, 1) = a;
-end
-
 % Ground reaction forces
 r_force_GR_x = FP2_force_x(rightTimeRange);
 r_force_GR_y = FP2_force_y(rightTimeRange);
 
 % Distance calculations
-RANKLE_x = data_trc.RAJC_Y(rightTimeRange) * toMeters;
-RANKLE_y = data_trc.RAJC_Z(rightTimeRange) * toMeters;
+RTOE_x = data_trc.RTOO_Y(rightTimeRange_der) * toMeters;   
+RTOE_y = data_trc.RTOO_Z(rightTimeRange_der) * toMeters;
 
-RTOE_x = data_trc.RTOO_Y(rightTimeRange) * toMeters;   
-RTOE_y = data_trc.RTOO_Z(rightTimeRange) * toMeters;
+r_footCOM_x = (RTOE_x - RANKLE_x) * 0.5 + RANKLE_x;
+r_footCOM_y = (RANKLE_y - RTOE_y) * 0.5 + RTOE_y;
 
-r_ankleCOM_x = (RTOE_x - RANKLE_x) * 0.5 + RANKLE_x;
-r_ankleCOM_y = (RANKLE_y - RTOE_y) * 0.5 + RTOE_y;
+r_footCOP_x = FP2_COP_x(rightTimeRange_der);
+r_footCOP_y = FP2_COP_y(rightTimeRange_der);
 
-r_ankleCOP_x = FP2_COP_x(rightTimeRange);
-r_ankleCOP_y = FP2_COP_y(rightTimeRange);
-
-r_dist_GR_x = r_ankleCOP_x - r_ankleCOM_x;
+r_dist_GR_x = r_footCOP_x - r_footCOM_x;
 r_dist_GR_x(59:end) = 0; % Write about in report
 
-r_dist_GR_y = r_ankleCOM_y - r_ankleCOP_y;
+r_dist_GR_y = r_footCOM_y - r_footCOP_y;
 r_dist_GR_y(59:end) = 0; 
 
-r_dist_A_x = r_ankleCOM_x - RANKLE_x;
-r_dist_A_y = RANKLE_y - r_ankleCOM_y;
+r_dist_A_x = r_footCOM_x - RANKLE_x;
+r_dist_A_y = RANKLE_y - r_footCOM_y;
+
+% Calculate acceleration
+r_a_F_x = []; % Acceleration of the right foot in x-direction
+for i=3:size(rightTimeRange_der, 2)
+    a = (r_footCOM_x(i-2) - 2*r_footCOM_x(i-1) + r_footCOM_x(i)) / timeStep^2;
+    r_a_F_x(i-2, 1) = a;
+end
+
+r_a_F_y = []; % Acceleration of the right foot in y-direction
+for i=3:size(rightTimeRange_der, 2)
+    a = (r_footCOM_y(i-2) - 2*r_footCOM_y(i-1) + r_footCOM_y(i)) / timeStep^2;
+    r_a_F_y(i-2, 1) = a;
+end
 
 % Read foot angle data
 footAngleR = angles_right.rightFootAngleR * pi/180; % angles in radians
@@ -175,12 +174,14 @@ end
 r_force_A_x = m_F * r_a_F_x - r_force_GR_x;
 r_force_A_y = m_F * r_a_F_y - r_force_GR_y + foot_gravity_force;
 
-r_moment_A = inertia_F .* r_alfa - r_force_GR_x .* r_dist_GR_y - r_force_GR_y .* r_dist_GR_x + r_force_A_x .* r_dist_A_y + r_force_A_y .* r_dist_A_x;
+r_moment_A = inertia_F .* r_alfa - r_force_GR_x .* r_dist_GR_y(1:end-n) - r_force_GR_y .* r_dist_GR_x(1:end-n)  + r_force_A_x .* r_dist_A_y(1:end-n)  + r_force_A_y .* r_dist_A_x(1:end-n) ;
 
 %% Plot ankle results
 timeL = linspace(0, 100, length(leftTimeRange));
 timeR = linspace(0, 100, length(rightTimeRange));
 
+
+figure(1)
 subplot(2, 1, 1); % Foot segment angular acceleration
 plot(timeR, r_alfa, 'green', 'LineWidth', 1.5);
 hold on
@@ -204,6 +205,198 @@ axis([0 100 -25 110])
 grid on
 
 %% KNEES
+% Constant for both left and right
+m_S = 0.0465 * weight; % Mass of the shank
+inertia_S = m_S * (0.528 - 0.302)^2;
+shank_gravity_force = m_S * g;
 %% Left knee
+% Read coordinates for left knee
+LKNEE_x = data_trc.LKJC_Y(leftTimeRange_der) * toMeters;
+LKNEE_y = data_trc.LKJC_Z(leftTimeRange_der) * toMeters;
+
+l_a_K_x = []; % Acceleration of the left shank in x-direction
+for i=3:size(leftTimeRange_der, 2)
+    a = (LKNEE_x(i-2) - 2*LKNEE_x(i-1) + LKNEE_x(i)) / timeStep^2;
+    l_a_K_x(i-2, 1) = a;
+end
+
+l_a_K_y = []; % Acceleration of the left shank in y-direction
+for i=3:size(leftTimeRange_der, 2)
+    a = (LKNEE_y(i-2) - 2*LKNEE_y(i-1) + LKNEE_y(i)) / timeStep^2;
+    l_a_K_y(i-2, 1) = a;
+end
+
+% Read left shank angle data
+shankAngleL = angles_left.leftShankAngleL * pi/180; % angles in radians
+
+l_alfa_S = [];
+for i=3:size(leftTimeRange_der, 2)
+    a = (shankAngleL(i-2) - 2*shankAngleL(i-1) + shankAngleL(i)) / timeStep^2 ;
+    l_alfa_S(i-2, 1) = a;
+end
+
+% Calculate distances
+l_shankCOM_x = (LKNEE_x - LANKLE_x) * 0.567 + LANKLE_x;
+l_shankCOM_y = (LKNEE_y - LANKLE_y) * 0.567 + LANKLE_y;
+
+% Distance center of mass - ankle
+l_dist_x = l_shankCOM_x - LANKLE_x;
+l_dist_y = l_shankCOM_y - LANKLE_y;
+
+% Distance center of mass - knee
+l_ds_x = LKNEE_x - l_shankCOM_x;
+l_ds_y = LKNEE_y - l_shankCOM_y; 
+
+% Calculations
+l_force_K_x = m_S * l_a_K_x + l_force_A_x;
+l_force_K_y = m_S * l_a_K_y + l_force_A_y + shank_gravity_force;
+
+l_moment_K = inertia_S .* l_alfa_S + l_moment_A + l_force_A_x .* l_dist_y(1:end-n) - l_force_A_y .* l_dist_x(1:end-n) - l_force_K_y .* l_ds_x(1:end-n) + l_force_K_x .* l_ds_y(1:end-n);
 %% Right knee
+% Read coordinates for right knee
+RKNEE_x = data_trc.RKJC_Y(rightTimeRange_der) * toMeters;
+RKNEE_y = data_trc.RKJC_Z(rightTimeRange_der) * toMeters;
+
+r_a_S_x = []; % Acceleration of the right shank in x-direction
+for i=3:size(rightTimeRange_der, 2)
+    a = (RKNEE_x(i-2) - 2*RKNEE_x(i-1) + RKNEE_x(i)) / timeStep^2;
+    r_a_S_x(i-2, 1) = a;
+end
+
+r_a_S_y = []; % Acceleration of the right shank in y-direction
+for i=3:size(rightTimeRange_der, 2)
+    a = (RKNEE_y(i-2) - 2*RKNEE_y(i-1) + RKNEE_y(i)) / timeStep^2;
+    r_a_S_y(i-2, 1) = a;
+end
+
+% Read left shank angle data
+shankAngleR = angles_right.rightShankAngleR * pi/180; % angles in radians
+
+r_alfa_S = [];
+for i=3:size(rightTimeRange_der, 2)
+    a = (shankAngleR(i-2) - 2*shankAngleR(i-1) + shankAngleR(i)) / timeStep^2 ;
+    r_alfa_S(i-2, 1) = a;
+end
+
+% Calculate distances
+r_shankCOM_x = (RKNEE_x - RANKLE_x) * 0.567 + RANKLE_x;
+r_shankCOM_y = (RKNEE_y - RANKLE_y) * 0.567 + RANKLE_y;
+
+% Distance center of mass - ankle
+r_dist_x = r_shankCOM_x - RANKLE_x;
+r_dist_y = r_shankCOM_y - RANKLE_y;
+
+% Distance center of mass - knee
+r_ds_x = RKNEE_x - r_shankCOM_x;
+r_ds_y = RKNEE_y - r_shankCOM_y; 
+
+% Calculations
+r_force_K_x = m_S * r_a_S_x + r_force_A_x;
+r_force_K_y = m_S * r_a_S_y + r_force_A_y + shank_gravity_force;
+
+r_moment_K = inertia_S .* r_alfa_S + r_moment_A + r_force_A_x .* r_dist_y(1:end-n) - r_force_A_y .* r_dist_x(1:end-n) - r_force_K_y .* r_ds_x(1:end-n) + r_force_K_x .* r_ds_y(1:end-n);
 %% Plot knee results
+timeL = linspace(0, 100, length(leftTimeRange));
+timeR = linspace(0, 100, length(rightTimeRange));
+
+figure(2)
+subplot(2, 1, 1); % Foot segment angular acceleration
+plot(timeR, r_alfa_S, 'green', 'LineWidth', 1.5);
+hold on
+plot(timeL, l_alfa_S, 'red', 'LineWidth', 1.5);
+title('Shank segment angular acceleration')
+legend('Right gait', 'Left gait')
+xlabel('Gait cycle [%]')
+ylabel('Angular acceleration [rad/s^2]', 'FontSize', 9)
+%axis([0 100 -200 200])
+grid on
+
+subplot(2, 1, 2); % Ankle moment
+plot(timeR, r_moment_K, 'green', 'LineWidth', 1.5);
+hold on
+plot(timeL, l_moment_K, 'red', 'LineWidth', 1.5);
+title('Knee moment')
+legend('Right gait', 'Left gait')
+xlabel('Gait cycle [%]')
+ylabel('Dorsiflexor - / Plantarflexor + [N*m]', 'FontSize', 9)
+%axis([0 100 -25 110])
+grid on
+
+%% HIPS
+% Constant for both left and right
+m_T = 0.1 * weight;
+hip_gravity_force = m_T * g;
+inertia_T = m_T * (0.567-0.54)^2;
+%% Left hip
+% Center of mass coordinates
+LHIP_x=data_trc.LHJC_Y(leftTimeRange_der)*toMeters;   
+LHIP_y=data_trc.LHJC_Z(leftTimeRange_der)*toMeters; 
+
+l_thighCOM_x = (LHIP_x - LKNEE_x) * 0.567 + LKNEE_x;
+l_thighCOM_y = (LHIP_y - LKNEE_y) * 0.567 + LKNEE_y;
+
+l_a_T_x = []; % Acceleration of the right shank in x-direction
+for i=3:size(leftTimeRange_der, 2)
+    a = (l_thighCOM_x(i-2) - 2*l_thighCOM_x(i-1) + l_thighCOM_x(i)) / timeStep^2;
+    l_a_T_x(i-2, 1) = a;
+end
+
+l_a_T_y = []; % Acceleration of the right shank in y-direction
+for i=3:size(leftTimeRange_der, 2)
+    a = (l_thighCOM_y(i-2) - 2*l_thighCOM_y(i-1) + l_thighCOM_y(i)) / timeStep^2;
+    l_a_T_y(i-2, 1) = a;
+end
+
+% Read left thigh angle data
+thighAngleL = angles_left.leftThighAngleL * pi/180; % angles in radians
+
+l_alfa_T = [];
+for i=3:size(leftTimeRange_der, 2)
+    a = (thighAngleL(i-2) - 2*thighAngleL(i-1) + thighAngleL(i)) / timeStep^2 ;
+    l_alfa_T(i-2, 1) = a;
+end
+
+% Distance center of mass - knee
+l_dist_kt_x = l_thighCOM_x - LKNEE_x;
+l_dist_kt_y = l_thighCOM_y - LKNEE_y;
+
+% Distance center of mass - hip
+l_dist_ht_x = LHIP_x - l_thighCOM_x;
+l_dist_ht_y = LHIP_y - l_thighCOM_y; 
+
+% Calculations
+l_force_H_x = m_T * l_a_T_x + l_force_K_x;
+l_force_H_y = m_T * l_a_T_y + l_force_K_y + hip_gravity_force;
+
+l_moment_H = inertia_T .* l_alfa_T + l_moment_K + l_force_K_x .* l_dist_kt_y(1:end-n) + l_force_K_y .* l_dist_kt_x(1:end-n) + l_force_H_y .* l_dist_ht_x(1:end-n) + l_force_H_x .* l_dist_ht_y(1:end-n);
+
+%% Right hip
+
+% Calculations
+
+%% Plot hip results
+timeL = linspace(0, 100, length(leftTimeRange));
+timeR = linspace(0, 100, length(rightTimeRange));
+
+figure(3)
+subplot(2, 1, 1); % Foot segment angular acceleration
+% plot(timeR, r_alfa_S, 'green', 'LineWidth', 1.5);
+% hold on
+plot(timeL, l_alfa_T, 'red', 'LineWidth', 1.5);
+title('Thigh segment angular acceleration')
+% legend('Right gait', 'Left gait')
+xlabel('Gait cycle [%]')
+ylabel('Angular acceleration [rad/s^2]', 'FontSize', 9)
+%axis([0 100 -200 200])
+grid on
+
+subplot(2, 1, 2); % Hip moment
+%plot(timeR, r_moment_K, 'green', 'LineWidth', 1.5);
+%hold on
+plot(timeL, l_moment_H, 'red', 'LineWidth', 1.5);
+title('Hip moment')
+%legend('Right gait', 'Left gait')
+xlabel('Gait cycle [%]')
+ylabel('Dorsiflexor - / Plantarflexor + [N*m]', 'FontSize', 9)
+%axis([0 100 -25 110])
+grid on

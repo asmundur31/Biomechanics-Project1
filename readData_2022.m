@@ -59,10 +59,6 @@ trunkAngleL = getSegmentAngle(TRXO_x, TRXO_y, TRXP_x, TRXP_y, leftTimeRange);
 pelvisAngleR = getSegmentAngle(PELP_x, PELP_y, PELO_x, PELO_y, rightTimeRange);
 pelvisAngleL = getSegmentAngle(PELP_x, PELP_y, PELO_x, PELO_y, leftTimeRange);
 
-% Calculate the left Hip Angle
-% leftThighAngleR = getSegmentAngle(LHIP_x, LHIP_y, LKNEE_x, LKNEE_y, rightTimeRange);
-% leftHipAngleR = getJointAngle(pelvisAngleR, leftThighAngleR);
-
 leftThighAngleL = getSegmentAngle(LHIP_x, LHIP_y, LKNEE_x, LKNEE_y, leftTimeRange);
 leftHipAngleL = getJointAngle(pelvisAngleL, leftThighAngleL);
 
@@ -70,13 +66,7 @@ leftHipAngleL = getJointAngle(pelvisAngleL, leftThighAngleL);
 rightThighAngleR = getSegmentAngle(RHIP_x, RHIP_y, RKNEE_x, RKNEE_y, rightTimeRange);
 rightHipAngleR = getJointAngle(pelvisAngleR, rightThighAngleR);
 
-%rightThighAngleL = getSegmentAngle(RHIP_x, RHIP_y, RKNEE_x, RKNEE_y, leftTimeRange);
-%rightHipAngleL = getJointAngle(pelvisAngleL, rightThighAngleL);
-
 % Calculate the left Knee Angle
-%leftShankAngleR = getSegmentAngle(LKNEE_x, LKNEE_y, LANKLE_x, LANKLE_y, rightTimeRange);
-%leftKneeAngleR = getJointAngle(leftShankAngleR, leftThighAngleR);
-
 leftShankAngleL = getSegmentAngle(LKNEE_x, LKNEE_y, LANKLE_x, LANKLE_y, leftTimeRange);
 leftKneeAngleL = getJointAngle(leftShankAngleL, leftThighAngleL);
 
@@ -84,29 +74,19 @@ leftKneeAngleL = getJointAngle(leftShankAngleL, leftThighAngleL);
 rightShankAngleR = getSegmentAngle(RKNEE_x, RKNEE_y, RANKLE_x, RANKLE_y, rightTimeRange);
 rightKneeAngleR = getJointAngle(rightShankAngleR, rightThighAngleR);
 
-%rightShankAngleL = getSegmentAngle(RKNEE_x, RKNEE_y, RANKLE_x, RANKLE_y, leftTimeRange);
-%rightKneeAngleL = getJointAngle(rightShankAngleL, rightThighAngleL);
-
 % Calculate the right Ankle Angle
 rightFootAngleR = getFootAngle(RANKLE_x, RANKLE_y, RTOE_x, RTOE_y, rightTimeRange);
 rightAnkleAngleR = getAnkleAngle(rightShankAngleR, rightFootAngleR);
 
-%rightFootAngleL = getFootAngle(RANKLE_x, RANKLE_y, RTOE_x, RTOE_y, leftTimeRange);
-%rightAnkleAngleL = getAnkleAngle(rightShankAngleL, rightFootAngleL);
-
 % Calculate the left Ankle Angle
-%leftFootAngleR = getFootAngle(LANKLE_x, LANKLE_y, LTOE_x, LTOE_y, rightTimeRange);
-%leftAnkleAngleR = getAnkleAngle(leftShankAngleR, leftFootAngleR);
-
 leftFootAngleL = getFootAngle(LANKLE_x, LANKLE_y, LTOE_x, LTOE_y, leftTimeRange);
 leftAnkleAngleL = getAnkleAngle(leftShankAngleL, leftFootAngleL);
 
-%left_table = table(trunkAngleL, pelvisAngleL, leftHipAngleL, rightHipAngleL, leftKneeAngleL, rightKneeAngleL, rightAnkleAngleL, leftFootAngleL, leftAnkleAngleL);
-left_table = table(trunkAngleL, pelvisAngleL, leftHipAngleL, leftKneeAngleL, leftFootAngleL, leftAnkleAngleL);
+% Save the angles to a separate file
+left_table = table(trunkAngleL, pelvisAngleL, leftHipAngleL, leftThighAngleL, leftShankAngleL, leftKneeAngleL, leftFootAngleL, leftAnkleAngleL);
 writetable(left_table,'angles_left.txt', 'Delimiter',' ')
 
-%right_table = table(trunkAngleR, pelvisAngleR, leftHipAngleR, rightHipAngleR, leftKneeAngleR, rightKneeAngleR, rightAnkleAngleR, leftFootAngleR, leftAnkleAngleR);
-right_table = table(trunkAngleR, pelvisAngleR, rightHipAngleR, rightKneeAngleR, rightFootAngleR, rightAnkleAngleR);
+right_table = table(trunkAngleR, pelvisAngleR, rightHipAngleR, rightThighAngleR, rightShankAngleR, rightKneeAngleR, rightFootAngleR, rightAnkleAngleR);
 writetable(right_table,'angles_right.txt', 'Delimiter',' ')
 
 %% Here begins the plots - Top->Down 
@@ -118,7 +98,9 @@ leftTimeRange_plot = (288:386);
 timeR = linspace(0, 100, length(rightTimeRange_plot));
 timeL = linspace(0, 100, length(leftTimeRange_plot));
 
-% Plot all the angles in the same figure
+% Plot all the angles on the same figure
+% tiledlayout(4,2)
+
 % Trunk Angle Plot
 subplot(3,2,1);
 plot(timeR, trunkAngleR(n+1:end), 'green', 'LineWidth', 1.5);
@@ -154,24 +136,6 @@ ylabel('Extension - / Flexion + [deg]', 'FontSize', 9)
 axis([0 100 -30 40])
 grid on
 
-% nexttile
-% plot(timeR, leftHipAngleR(n+1:end), 'green');
-% hold on
-% plot(timeL, rightHipAngleL(n+1:end), 'red');
-% title('Left hip (green) and right hip (red)')
-% legend('Right gait', 'Left gait')
-% xlabel('Gait cycle [%]')
-% ylabel('Extension - / Flexion + [deg]')
-% 
-% nexttile
-% plot(timeL, leftHipAngleL(n+1:end), 'red');
-% hold on
-% plot(timeR, rightHipAngleR(n+1:end), 'green');
-% title('Right hip (green) and left hip (red)')
-% legend('Left gait', 'Right gait')
-% xlabel('Gait cycle [%]')
-% ylabel('Extension - / Flexion + [deg]')
-
 % Knee Angle Plots
 subplot(3,2,4);
 plot(timeR, rightKneeAngleR(n+1:end), 'green', 'LineWidth', 1.5);
@@ -182,24 +146,6 @@ legend('Right gait', 'Left gait')
 xlabel('Gait cycle [%]')
 ylabel('Hyperextension - / Flexion + [deg]', 'FontSize', 9)
 grid on
-
-% nexttile
-% plot(timeR, leftKneeAngleR(n+1:end), 'green');
-% hold on
-% plot(timeL, rightKneeAngleL(n+1:end), 'red');
-% title('Left knee (green) and right knee (red)')
-% legend('Right gait', 'Left gait')
-% xlabel('Gait cycle [%]')
-% ylabel('Hyperextension - / Flexion + [deg]')
-% 
-% nexttile
-% plot(timeL, leftKneeAngleL(n+1:end), 'red');
-% hold on
-% plot(timeR, rightKneeAngleR(n+1:end), 'green');
-% title('Right knee (green) and left knee (red)')
-% legend('Left gait', 'Right gait')
-% xlabel('Gait cycle [%]')
-% ylabel('Hyperextension - / Flexion + [deg]')
 
 % Ankle Angle Plots
 subplot(3,2,5);
@@ -212,25 +158,6 @@ xlabel('Gait cycle [%]')
 ylabel('Plantarflexor - / Dorsiflexor + [deg]', 'FontSize', 9)
 axis([0 100 -25 20])
 grid on
-
-% nexttile
-% plot(timeR, leftAnkleAngleR(n+1:end), 'green');
-% hold on
-% plot(timeL, rightAnkleAngleL(n+1:end), 'red');
-% title('Left ankle (green) and right ankle (red)')
-% legend('Right gait', 'Left gait')
-% xlabel('Gait cycle [%]')
-% ylabel('Plantarflexor - / Dorsiflexor + [deg]')
-% 
-% nexttile
-% plot(timeL, leftAnkleAngleL(n+1:end), 'red');
-% hold on
-% plot(timeR, rightAnkleAngleR(n+1:end), 'green');
-% title('Right ankle (green) and left ankle (red)')
-% legend('Left gait', 'Right gait')
-% xlabel('Gait cycle [%]')
-% ylabel('Plantarflexor - / Dorsiflexor + [deg]')
-
 
 %% Functions that handle angles for our code
 
