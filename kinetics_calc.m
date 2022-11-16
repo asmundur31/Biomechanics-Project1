@@ -4,7 +4,7 @@ name_grf   ={'walking_FP' 'jogging_FP' 'crouch_FP'};
 
 % frame_sel  =[];
 
-index=1; % select the motion to be loaded and visualized e.g., index=1 -> NormWalk
+index=2; % select the motion to be loaded and visualized e.g., index=1 -> NormWalk
 %% Read marker trajectory and ground reaction data
 % data files should be in the same folder as the .m file
 file_dir = pwd;
@@ -17,8 +17,14 @@ data_grf_s = downsample(data_grf,10);
 
 %% Read angle data
 % Load the calculated angles
-angles_left = readtable(fullfile(file_dir, 'walking_angles_left.txt'));
-angles_right = readtable(fullfile(file_dir, 'walking_angles_right.txt'));
+
+if index==1
+    angles_left = readtable(fullfile(file_dir, 'walking_angles_left.txt'));
+    angles_right = readtable(fullfile(file_dir, 'walking_angles_right.txt'));
+elseif index==2
+    angles_left = readtable(fullfile(file_dir, 'jogging_angles_left.txt'));
+    angles_right = readtable(fullfile(file_dir, 'jogging_angles_right.txt'));
+end
 
 %% Constants
 height = 1705; % mm
@@ -28,18 +34,26 @@ n = 2; % We add two extra frames to the gait cycle for derivations
 toMeters = 1/1000;
 timeStep = 1/100;
 
+% Time range
+if index==1
+    leftTimeRange_der = (288:386+n);
+    leftTimeRange = (288:386);
+    
+    rightTimeRange_der = (237-n:336);
+    rightTimeRange = (237:336);
+elseif index==2
+    leftTimeRange_der = (163-n:229);
+    leftTimeRange = (163:229);
+    
+    rightTimeRange_der = (163-n:229);
+    rightTimeRange = (163:229);
+end
+
 %% ANKLES
 % Constant for both left and right
 m_F = 0.0145 * weight; % Mass of the foot
 foot_gravity_force = m_F * g;
-inertia_F = m_F * (0.69-0.5)^2;
-
-% Time range
-leftTimeRange_der = (288:386+n);
-leftTimeRange = (288:386);
-
-rightTimeRange_der = (237-n:336);
-rightTimeRange = (237:336);
+inertia_F = m_F * (0.69-0.475)^2;
 
 %% Left ankle
 % Data from force plate 1 
@@ -347,7 +361,7 @@ grid on
 % Constant for both left and right
 m_T = 0.1 * weight;
 hip_gravity_force = m_T * g;
-inertia_T = m_T * (0.567-0.54)^2;
+inertia_T = m_T * (0.323 - 0.54)^2;
 
 %% Left hip
 % Read coordinates for left hip
@@ -461,7 +475,7 @@ plot(timeL, l_moment_H, 'red', 'LineWidth', 1.5);
 title('Hip moment')
 legend('Right gait', 'Left gait')
 xlabel('Gait cycle [%]')
-ylabel('Knee flexor - / Knee extensor + [N*m]', 'FontSize', 9)
+ylabel('Hip flexor - / Hip extensor + [N*m]', 'FontSize', 9)
 %axis([0 100 -25 110])
 grid on
 
@@ -474,3 +488,12 @@ legend('Right gait', 'Left gait')
 xlabel('Gait cycle [%]')
 ylabel('Power absorption - / Power generation + [W]', 'FontSize', 9)
 grid on
+
+%% SAVE DATA
+if index == 1
+    walking_table = table(r_alfa_f, r_moment_A, r_power_A, r_alfa_S, r_moment_K, r_power_K, r_alfa_T, r_moment_H, r_power_H);
+    writetable(walking_table,'walking_kinetics.txt', 'Delimiter',' ')
+elseif index == 2
+    jogging_table = table(r_alfa_f, r_moment_A, r_power_A, r_alfa_S, r_moment_K, r_power_K, r_alfa_T, r_moment_H, r_power_H);
+    writetable(jogging_table,'jogging_kinetics.txt', 'Delimiter',' ')
+end
