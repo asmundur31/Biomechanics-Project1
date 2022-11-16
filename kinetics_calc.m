@@ -4,7 +4,7 @@ name_grf   ={'walking_FP' 'jogging_FP' 'crouch_FP'};
 
 % frame_sel  =[];
 
-index=2; % select the motion to be loaded and visualized e.g., index=1 -> NormWalk
+index=1; % select the motion to be loaded and visualized e.g., index=1 -> NormWalk
 %% Read marker trajectory and ground reaction data
 % data files should be in the same folder as the .m file
 file_dir = pwd;
@@ -486,7 +486,7 @@ subplot(3, 1, 1); % Thigh segment angular acceleration
 plot(timeR, r_alfa_H, 'green', 'LineWidth', 1.5);
 hold on
 plot(timeL, l_alfa_H, 'red', 'LineWidth', 1.5);
-title('Thigh segment angular acceleration')
+title('Hip angular acceleration')
 legend('Right gait', 'Left gait')
 xlabel('Gait cycle [%]')
 ylabel('Angular acceleration [rad/s^2]', 'FontSize', 9)
