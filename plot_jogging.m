@@ -1,5 +1,6 @@
 % Plot walking vs jogging --> right_gait
 n=2;
+file_dir = pwd;
 
 % Load angle data
 angles_jogging = readtable(fullfile(file_dir, 'jogging_angles_right.txt'));
@@ -134,7 +135,7 @@ plot(timeWalk, kinetics_walking.r_moment_K, 'cyan', 'LineWidth', 1.5);
 title('Knee moment')
 legend('Jogging', 'Walking')
 xlabel('Gait cycle [%]')
-ylabel('Hip flexor - / Hip extensor + [N*m]', 'FontSize', 9)
+ylabel('Knee flexor - / Knee extensor + [N*m]', 'FontSize', 9)
 axis([0 100 -50 80])
 grid on
 

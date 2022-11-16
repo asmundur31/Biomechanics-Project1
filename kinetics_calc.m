@@ -4,7 +4,7 @@ name_grf   ={'walking_FP' 'jogging_FP' 'crouch_FP'};
 
 % frame_sel  =[];
 
-index=2; % select the motion to be loaded and visualized e.g., index=1 -> NormWalk
+index=1; % select the motion to be loaded and visualized e.g., index=1 -> NormWalk
 %% Read marker trajectory and ground reaction data
 % data files should be in the same folder as the .m file
 file_dir = pwd;
