@@ -4,7 +4,7 @@ name_grf   ={'walking_FP' 'jogging_FP' 'crouch_FP'};
 
 % frame_sel  =[];
 
-index=1; % select the motion to be loaded and visualized e.g., index=1 -> NormWalk
+index=2; % select the motion to be loaded and visualized e.g., index=1 -> NormWalk
 %% Read marker trajectory and ground reaction data
 % data files should be in the same folder as the .m file
 file_dir = pwd;
@@ -87,8 +87,8 @@ l_footCOP_y = FP1_COP_y(leftTimeRange_der);
 l_dist_GR_x = l_footCOP_x - l_footCOM_x;
 l_dist_GR_y = l_footCOM_y - l_footCOP_y;
 
-l_dist_GR_x(59:end) = 0; % Write about in report
-l_dist_GR_y(59:end) = 0; 
+l_force_GR_x(59:end) = 0; % Write about in report
+l_force_GR_y(59:end) = 0;
 
 % Distance LANKLE - center of mass
 l_dist_AF_x = l_footCOM_x - LANKLE_x;
@@ -158,8 +158,13 @@ r_footCOP_y = FP2_COP_y(rightTimeRange_der);
 r_dist_GR_x = r_footCOP_x - r_footCOM_x;
 r_dist_GR_y = r_footCOM_y - r_footCOP_y;
 
-r_dist_GR_x(59:end) = 0; % Write about in report
-r_dist_GR_y(59:end) = 0; 
+if index == 1
+    r_force_GR_x(59:end) = 0; % Write about in report
+    r_force_GR_y(59:end) = 0;
+elseif index==2
+    r_force_GR_x(25:end) = 0; % Write about in report
+    r_force_GR_y(25:end) = 0;
+end
 
 r_dist_AF_x = r_footCOM_x - RANKLE_x;
 r_dist_AF_y = RANKLE_y - r_footCOM_y;
