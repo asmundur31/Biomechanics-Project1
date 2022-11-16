@@ -52,7 +52,7 @@ title('Hips')
 legend('Jogging', 'Walking')
 xlabel('Gait cycle [%]')
 ylabel('Extension - / Flexion + [deg]', 'FontSize', 9)
-axis([0 100 -30 40])
+%axis([0 100 -30 40])
 grid on
 
 % Knee Angle Plots
@@ -64,7 +64,7 @@ title('Knees')
 legend('Jogging', 'Walking')
 xlabel('Gait cycle [%]')
 ylabel('Hyperextension - / Flexion + [deg]', 'FontSize', 9)
-axis([0 100 -10 60])
+%axis([0 100 -10 60])
 grid on
 
 % Ankle Angle Plots
@@ -84,14 +84,14 @@ grid on
 % ANKLE
 figure(2)
 subplot(3, 1, 1); % Foot segment angular acceleration
-plot(timeJog, kinetics_jogging.r_alfa_f, 'blue', 'LineWidth', 1.5);
+plot(timeJog, kinetics_jogging.r_alfa_a, 'blue', 'LineWidth', 1.5);
 hold on
-plot(timeWalk, kinetics_walking.r_alfa_f, 'cyan', 'LineWidth', 1.5);
-title('Foot segment angular acceleration')
+plot(timeWalk, kinetics_walking.r_alfa_a, 'cyan', 'LineWidth', 1.5);
+title('Ankle angular acceleration')
 legend('Jogging', 'Walking')
 xlabel('Gait cycle [%]')
 ylabel('Angular acceleration [rad/s^2]', 'FontSize', 9)
-axis([0 100 -200 200])
+%axis([0 100 -200 200])
 grid on
 
 subplot(3, 1, 2); % Ankle moment
@@ -117,15 +117,15 @@ grid on
 
 % KNEE
 figure(3)
-subplot(3, 1, 1); % Shank segment angular acceleration
-plot(timeJog, kinetics_jogging.r_alfa_S, 'blue', 'LineWidth', 1.5);
+subplot(3, 1, 1); % Knee angular acceleration
+plot(timeJog, kinetics_jogging.r_alfa_K, 'blue', 'LineWidth', 1.5);
 hold on
-plot(timeWalk, kinetics_walking.r_alfa_S, 'cyan', 'LineWidth', 1.5);
-title('Shank segment angular acceleration')
+plot(timeWalk, kinetics_walking.r_alfa_K, 'cyan', 'LineWidth', 1.5);
+title('Knee angular acceleration')
 legend('Jogging', 'Walking')
 xlabel('Gait cycle [%]')
 ylabel('Angular acceleration [rad/s^2]', 'FontSize', 9)
-axis([0 100 -200 200])
+%axis([0 100 -200 200])
 grid on
 
 subplot(3, 1, 2); % Knee moment
@@ -136,7 +136,7 @@ title('Knee moment')
 legend('Jogging', 'Walking')
 xlabel('Gait cycle [%]')
 ylabel('Knee flexor - / Knee extensor + [N*m]', 'FontSize', 9)
-axis([0 100 -50 80])
+%axis([0 100 -50 80])
 grid on
 
 subplot(3, 1, 3); % Knee power
@@ -151,15 +151,15 @@ grid on
 
 % HIP
 figure(4)
-subplot(3, 1, 1); % Thigh segment angular acceleration
-plot(timeJog, kinetics_jogging.r_alfa_T, 'blue', 'LineWidth', 1.5);
+subplot(3, 1, 1); % Hip angular acceleration
+plot(timeJog, kinetics_jogging.r_alfa_H, 'blue', 'LineWidth', 1.5);
 hold on
-plot(timeWalk, kinetics_walking.r_alfa_T, 'cyan', 'LineWidth', 1.5);
-title('Thigh segment angular acceleration')
+plot(timeWalk, kinetics_walking.r_alfa_H, 'cyan', 'LineWidth', 1.5);
+title('Hip angular acceleration')
 legend('Jogging', 'Walking')
 xlabel('Gait cycle [%]')
 ylabel('Angular acceleration [rad/s^2]', 'FontSize', 9)
-axis([0 100 -100 80])
+%axis([0 100 -100 80])
 grid on
 
 subplot(3, 1, 2); % Hip moment
@@ -181,7 +181,7 @@ title('Hip power')
 legend('Jogging', 'Walking')
 xlabel('Gait cycle [%]')
 ylabel('Power absorption - / Power generation + [W]', 'FontSize', 9)
-axis([0 100 -6000 10000])
+%axis([0 100 -6000 10000])
 grid on
 
 
