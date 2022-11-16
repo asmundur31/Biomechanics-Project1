@@ -36,7 +36,7 @@ timeStep = 1/100;
 
 % Time range
 if index==1
-    leftTimeRange_der = (288:386+n);
+    leftTimeRange_der = (288-n:386);
     leftTimeRange = (288:386);
     
     rightTimeRange_der = (237-n:336);
