@@ -87,7 +87,7 @@ subplot(3, 1, 1); % Foot segment angular acceleration
 plot(timeJog, kinetics_jogging.r_alfa_a, 'blue', 'LineWidth', 1.5);
 hold on
 plot(timeWalk, kinetics_walking.r_alfa_a, 'cyan', 'LineWidth', 1.5);
-title('Foot angular acceleration')
+title('Ankle angular acceleration')
 legend('Jogging', 'Walking')
 xlabel('Gait cycle [%]')
 ylabel('Angular acceleration [rad/s^2]', 'FontSize', 9)
